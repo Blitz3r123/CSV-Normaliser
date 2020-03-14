@@ -5,6 +5,7 @@ let stateElement = document.querySelector('#state');
 let state = stateElement.attributes;
 
 $('#folder-loader').hide();
+$('#run-loader').hide();
 
 $('#folder-selection').on('change', e => {
     handleFolderSelection(e);
@@ -12,13 +13,15 @@ $('#folder-selection').on('change', e => {
 
 $('#run-button').on('click', e => {
     files = state.files.value.split('__');
+    // $('#run-loader').show();
+    // $('#run-button').hide();
     normaliseCSVs(files);
 });
 
 function handleFolderSelection(e){
     $('#folder-selection').hide();
     $('#folder-loader').show();
-
+    
     let files = [];
 
     let folder = path.dirname(e.target.files[0].path);
@@ -29,7 +32,7 @@ function handleFolderSelection(e){
     files = files.filter(a => path.extname(a) == '.csv');
 
     renderFiles(files);
-    
+
     stateElement.setAttribute('files', files.join('__'));
 
     $('#folder-selection').show();
@@ -37,37 +40,46 @@ function handleFolderSelection(e){
 }
 
 async function normaliseCSVs(files){
-    files.forEach(file => {
-        (async () => {
-            let rawData = await readFile(file);
-            let rows = rawData.split('\n');
-            let header = rows[0].split(',');
-            let headerLength = rows[0].split(',').length;
+    files.forEach((file, index) => {
+        
+        let rawData = fs.readFileSync(file, 'utf8');
+        let rows = rawData.split('\n');
+        let header = rows[0].split(',');
+        let headerLength = rows[0].split(',').length;
 
-            /*
-                1. Count how many items in header
-                2. Go through each row and see if same amount of items as header
-                3. If not delete that row
-                4. After going through everything, rewrite the csv
-            */
+        let newHeader = [];
+        header.forEach(item => {
+            newHeader.push(item.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '').replace(/\s/g,''));
+        });
 
-            let output = [];
+        /*
+            1. Count how many items in header
+            2. Go through each row and see if same amount of items as header
+            3. If not delete that row
+            4. After going through everything, rewrite the csv
+        */
 
-            rows.forEach(row => {
-                let rowLength = row.split(',').length;
-                
+        let output = [];
+
+        rows.forEach((row, index) => {
+            let rowLength = row.split(',').length;
+            
+            if(index == 0){
+                output.push(newHeader);
+            }else{
                 if(rowLength == headerLength){
                     output.push(row);
                 }
+            }
+        });
 
-            });
+        output = output.join('\n\n');
 
-            output = output.join('\n\n');
+        // await writeToFile(file, output);
+        fs.writeFileSync(file, output, 'utf8');
 
-            await writeToFile(file, output);
-
-            outputFile(file);
-        })();
+        outputFile(file);
+        
     });
 }
 
@@ -160,8 +172,6 @@ function isFolder(pathval){
 
 function renderFiles(files){
     let list = document.querySelector('#file-input-list');
-
-    
     
     while(list.firstChild){
         list.removeChild(list.firstChild);
@@ -182,7 +192,6 @@ function renderFiles(files){
         });
         
         list.appendChild(li);
-        
     });
 }
 

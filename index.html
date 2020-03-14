@@ -10,11 +10,11 @@
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-        <title>CDF Normaliser</title>
+        <title>CSV Normaliser</title>
     </head>
     <body>
         <div class="container" id="state">
-            <h1 class="display-1" style="text-align: center;">CDF Normaliser</h1>
+            <h1 class="display-1" style="text-align: center;">CSV Normaliser</h1>
 
             <div class="row" style="height: 80vh;">
                 
@@ -47,7 +47,12 @@
                             <h5 class="card-title" style="text-align: center;">Normalise</h5>
                             
                             <div style="display: flex; justify-content: center;">
-                                <p class="btn btn-success" style="width: 100%;" id="run-button">Run</p>
+                                <p class="btn btn-success" style="width: 100%;" id="run-button">
+                                    <span id="run-text">Run</span>
+                                </p>
+                                <div class="spinner-border text-success" role="status" id="run-loader">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
                             </div>
 
 
