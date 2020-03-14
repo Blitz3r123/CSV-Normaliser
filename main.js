@@ -1,12 +1,20 @@
 const fs = require('fs');
 const path = require('path');
 
-let state = document.querySelector('#state').attributes;
+let stateElement = document.querySelector('#state');
+let state = stateElement.attributes;
 
 $('#folder-loader').hide();
 
 $('#folder-selection').on('change', e => {
     handleFolderSelection(e);
+});
+
+$('#run-button').on('click', async(e) => {
+    files = state.files.value.split('__');
+    $('#run-button').hide();
+    await normaliseCSVs(files);
+    $('#run-button').show();
 });
 
 function handleFolderSelection(e){
@@ -23,9 +31,92 @@ function handleFolderSelection(e){
     files = files.filter(a => path.extname(a) == '.csv');
 
     renderFiles(files);
+    
+    stateElement.setAttribute('files', files.join('__'));
 
     $('#folder-selection').show();
     $('#folder-loader').hide();
+}
+
+async function normaliseCSVs(files){
+    files.forEach(file => {
+        (async () => {
+            let rawData = await readFile(file);
+            let rows = rawData.split('\n');
+            let header = rows[0].split(',');
+            let headerLength = rows[0].split(',').length;
+
+            /*
+                1. Count how many items in header
+                2. Go through each row and see if same amount of items as header
+                3. If not delete that row
+                4. After going through everything, rewrite the csv
+            */
+
+            let output = [];
+
+            rows.forEach(row => {
+                let rowLength = row.split(',').length;
+                
+                if(rowLength == headerLength){
+                    output.push(row);
+                }
+
+            });
+
+            output = output.join('\n\n');
+
+            await writeToFile(file, output);
+
+            outputFile(file);
+        })();
+    });
+}
+
+function outputFile(file){
+    let list = document.querySelector('#file-output-list');
+    
+    let fileOutput = normalisePath(file);
+    
+    let li = document.createElement('li');
+    li.className = 'list-group-item';
+    li.textContent = fileOutput;
+    li.addEventListener('click', e => {
+        if(e.target.textContent == file){
+            e.target.textContent = fileOutput;
+        }else{
+            e.target.textContent = file;
+        }
+    });
+    
+    list.appendChild(li);
+        
+}
+
+function writeToFile(pathval, output){
+    return new Promise((resolve, reject) => {
+        fs.writeFile(pathval, output, 'utf8', err => {
+            if(err){
+                reject(err);
+            }else{
+                resolve();
+            }
+        });
+    });
+}
+
+function readFile(pathval){
+
+    return new Promise((resolve, reject) => {
+        fs.readFile(pathval, 'utf8', (err, data) => {
+            if(err){
+                reject(err);
+            }else{
+                resolve(data);
+            }
+        });
+    });
+
 }
 
 function getAllFiles(dirPath, arrayOfFiles){

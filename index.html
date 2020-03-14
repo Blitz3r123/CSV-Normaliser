@@ -46,11 +46,18 @@
                         <div class="card-body">
                             <h5 class="card-title" style="text-align: center;">Normalise</h5>
                             
-                            <p class="btn btn-success" style="width: 100%;">Run</p>
+                            <div style="display: flex; justify-content: center;">
+                                <p class="btn btn-success" style="width: 100%;" id="run-button">Run</p>
+                            </div>
+
 
                             <div style="margin-top: 2vh;">
-                                <ul class="list-group">
-                                    <!-- <li class="list-group-item text-success">Cras justo odio</li> -->
+                                <ul class="list-group" id="file-output-list" style="overflow-y: scroll; height: 65vh;">
+                                    <!-- <li class="list-group-item text-success" style="display: flex; justify-content: center;" id="run-loader-container">
+                                        <div class="spinner-border text-success" role="status" id="run-loader">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                    </li> -->
                                 </ul>
                             </div>
 
