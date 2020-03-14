@@ -18,7 +18,7 @@ Averages:   |       |
 
 So I created this tool to get rid of the averages at the end of the file to make it easier to manipulate the raw numbers.
 
-So the outcome of the tool would of the following format:
+So the outcome of the tool would be of the following format:
 
 Header One  |Header Two     |Header Three    
 ---         |---            |---
