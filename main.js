@@ -10,11 +10,9 @@ $('#folder-selection').on('change', e => {
     handleFolderSelection(e);
 });
 
-$('#run-button').on('click', async(e) => {
+$('#run-button').on('click', e => {
     files = state.files.value.split('__');
-    $('#run-button').hide();
-    await normaliseCSVs(files);
-    $('#run-button').show();
+    normaliseCSVs(files);
 });
 
 function handleFolderSelection(e){
